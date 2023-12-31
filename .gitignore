@@ -1,5 +1,5 @@
-# Ignore config files
-config.json
+# # Ignore config files
+# config.json
 
 # Ignore compiled Python files
 *.pyc
