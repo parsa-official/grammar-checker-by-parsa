@@ -1,7 +1,13 @@
-# Welcome to streamlit
+# Welcome to My Website 'English with Parsa'
 
-This is the app you get when you run `streamlit hello`, extracted as its own app.
+This repository contains an app extracted from "My Website English with Parsa."
 
-Edit [Hello.py](./Hello.py) to customize this app to your heart's desire. ❤️
+## Getting Started
 
-Check it out on [Streamlit Community Cloud](https://st-hello-app.streamlit.app/)
+To customize this app, simply edit the [Apps.py](./Apps.py) file according to your preferences and requirements. Let your creativity flow! ❤️
+
+## Explore the App
+
+Visit our [website](https://parsaa.streamlit.app/) to experience the app in action.
+
+Feel free to contribute, open issues, or suggest improvements. Happy coding! 🚀
