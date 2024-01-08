@@ -80,9 +80,9 @@ def run():
     answers_sheet = st.toggle("Answers Sheet")
 
     if answers_sheet:
-        question_type['Answers (be end of question)'] = 'Yes, The answer sheet can be seen at the end '
+        question_type['Answers (be end of page)'] = 'Yes, The answer sheet can be seen at the end of page.'
     else:
-        question_type['Answers (be end of question)'] = 'Do not need'
+        question_type['Answers (be end of page)'] = 'Do not need'
 
     ########## Response Level ##########
 
