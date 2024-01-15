@@ -45,6 +45,8 @@ def run():
         'Total number of questions': '',
         'level': 'basic',
         'Answers (be end of question)': '',
+        "Answers Options" : 'In MCQ questions, The answers (choices) of the questions must be different .(for example, the answers to all questions should not be option "A" or "B" or "C" or "D")',
+        'questions orders' : 'The order of the vocabs questions should be random choose (mean The first question should not be from the first word. be random)',
     }
 
     ########## Question type ##########
@@ -66,10 +68,10 @@ def run():
         question_type['level'] = 'Basic quiz (with Easy Question)'
 
     elif quiz_level=='Normal':
-        question_type['level'] = 'Normal quiz (Not so Easy, Not So hard)'    
+        question_type['level'] = 'Normal quiz (Not so Easy, Not so hard (HighSchool Level))'    
 
     elif quiz_level=='Hard':
-        question_type['level'] = 'Hard quiz (with hard and challengeable questions)'
+        question_type['level'] = 'Hard quiz (with hard and challengeable questions (College Level))'
         
     elif quiz_level=='Master':
         question_type['level'] = 'Master quiz (with master and so hard question - like for teachers and masters)'
@@ -91,7 +93,7 @@ def run():
         notic = st.write("Note: Use '-' or ',' for seprate words")
         if st.button('Start Quiz'):
             response = model.generate_content([
-                f'take Vocabulary Quiz about these vocabs- take random of those (for learning and remembering better)\n\n{json.dumps(question_type)} (Words of quiz be bold)',
+                f'take Vocabulary Quiz about these vocabs- take random of those (for learning and remembering better)\n\n{json.dumps(question_type)} (Vocabs of quiz be bold text)',
                 words
             ])
             st.write('Level:', question_type['level'])
