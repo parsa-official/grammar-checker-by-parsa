@@ -92,12 +92,16 @@ def run():
         words = st.text_area(label='Write your words')
         notic = st.write("Note: Use '-' or ',' for seprate words")
         if st.button('Start Quiz'):
+            # Shuffle the list of words before generating the quiz
+            vocab_list = [word.strip() for word in words.split('-')]  # Convert to list
+            random.shuffle(vocab_list)
             response = model.generate_content([
                 f'take Vocabulary Quiz about these vocabs- take random of those (for learning and remembering better)\n\n{json.dumps(question_type)} (Vocabs of quiz be bold text)',
-                words
+                ' - '.join(vocab_list)  # Join the shuffled list back to string
             ])
             st.write('Level:', question_type['level'])
             st.write(response.text)
+
 
     elif models == 'gemini-pro-vision':
         imageupload = st.file_uploader('Upload your photo', type=['jpg', 'jpeg', 'png'])
