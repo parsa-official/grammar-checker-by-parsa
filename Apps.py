@@ -27,7 +27,10 @@ def run():
         Challenge yourself with our Vocabulary Quiz app. Test your knowledge of
         words and expand your English vocabulary in an engaging and interactive way.
 
-        ## 📗 Soon ...
+        ## 📙 Grammatikprüfung 🇩🇪
+        Verbessern Sie Ihre Schreibfähigkeiten mit unserer Grammatikprüfung-App. 
+        Die App hilft Ihnen dabei, grammatikalische Fehler zu erkennen und zu korrigieren, 
+        damit Ihre Texte professioneller und präziser werden.
 
         ### Why Choose English with Parsa?
         - Tailored learning experiences
