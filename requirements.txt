@@ -30,7 +30,6 @@ cffi==1.16.0
 chardet==4.0.0
 charset-normalizer==3.3.2
 cinemagoer==2023.5.1
-cliapp==1.20180812.1
 click==8.1.7
 click-didyoumean==0.3.1
 click-plugins==1.1.1
