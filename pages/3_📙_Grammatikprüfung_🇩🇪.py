@@ -1,15 +1,13 @@
-import google.generativeai as genai
-from PIL import Image
+import cohere
 import streamlit as st
 import json
 from streamlit.logger import get_logger
 
 LOGGER = get_logger(__name__)
 
-
 def run():
     st.set_page_config(
-        page_title="Grammer Checker by Parsa",
+        page_title="Grammar Checker by Parsa",
         page_icon="📕",
     )
 
@@ -21,20 +19,25 @@ def run():
     config = load_config()
     api_key = config.get("api_key")
 
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-pro')
+    co = cohere.Client(api_key)
 
-    txt = st.text_input(label='Enter a text:')
     question = 'Check Grammar (Germany) of Text and if false, Say **Incorrect** and give a Correction and say why it is incorrect. But if true, Say **Correct** and give another example like that \n Text:'
-    button_clicked = st.button("Check Grammer")
-    response = model.generate_content([question, txt])
 
+    with st.form(key="grammar_form"):
+        txt = st.text_input(label='Enter a text:')
+        submit_button = st.form_submit_button("Check Grammar")
 
-    # for word in response:
-    if 'Incorrect' in response.text:
-        st.write(f"<p style='color: red;'>{response.text}</p>", unsafe_allow_html=True)
-    else:
-        st.write(f"<p style='color: green;'>{response.text}</p>", unsafe_allow_html=True)
+    if submit_button and txt.strip():
+        response = co.generate(
+            model='command',
+            prompt=f'{question} {txt}',
+            max_tokens=100,
+        )
+
+        if 'Incorrect' in response.generations[0].text:
+            st.write(f"<p style='color: red;'>{response.generations[0].text}</p>", unsafe_allow_html=True)
+        else:
+            st.write(f"<p style='color: green;'>{response.generations[0].text}</p>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
-    run()    
+    run()
