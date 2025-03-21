@@ -5,11 +5,11 @@ LOGGER = get_logger(__name__)
 
 def run():
     st.set_page_config(
-        page_title="English with Parsa",
+        page_title="Language with Parsa",
         page_icon="📚",
     )
 
-    st.title("Welcome to English with Parsa! 👋")
+    st.title("Welcome to Language with Parsa! 👋")
 
     st.sidebar.success("Select a app from the sidebar.")
 
@@ -19,7 +19,7 @@ def run():
         you've come to the right place! Choose from the options in the sidebar to
         explore the exciting learning opportunities.
 
-        ## 📕 Grammar Checker 📝
+        ## 📕 Grammar Checker (ENG/GER) 📝
         Enhance your writing skills with our Grammar Checker app. It helps you
         identify and correct grammatical errors, making your writing more polished.
 
@@ -27,10 +27,6 @@ def run():
         Challenge yourself with our Vocabulary Quiz app. Test your knowledge of
         words and expand your English vocabulary in an engaging and interactive way.
 
-        ## 📙 Grammatikprüfung 🇩🇪
-        Verbessern Sie Ihre Schreibfähigkeiten mit unserer Grammatikprüfung-App. 
-        Die App hilft Ihnen dabei, grammatikalische Fehler zu erkennen und zu korrigieren, 
-        damit Ihre Texte professioneller und präziser werden.
 
         ### Why Choose English with Parsa?
         - Tailored learning experiences

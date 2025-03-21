@@ -1,9 +1,7 @@
-import google.generativeai as genai
-from PIL import Image
 import streamlit as st
 import json
 import random
-
+from openai import OpenAI
 
 def run():
     st.set_page_config(
@@ -11,111 +9,114 @@ def run():
         page_icon="📘",
     )
 
+    st.title("📘 Vocabulary Quiz by Parsa")
+    st.markdown("Create smart vocabulary quizzes using your word list and AI! 🧠")
 
-    ########## API request ##########
-
+    # Load API key
     def load_config(file_path="config.json"):
         with open(file_path, "r") as f:
-            config = json.load(f)
-        return config
+            return json.load(f)
 
     config = load_config()
     api_key = config.get("api_key")
-    genai.configure(api_key=api_key)
+
+    # OpenRouter Client
+    client = OpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=api_key,
+    )
+
+    # 🔽 AI Model Selection
+    model_options = {
+        "⚡ Mistral 24B Instruct": "mistralai/mistral-small-3.1-24b-instruct:free",
+        "🔍 Google Gemma 3 12B": "google/gemma-3-27b-it:free",
+        "💬 OpenChat 7B": "openchat/openchat-7b:free",
+        "🧠 Qwen2.5 VL 72B": "qwen/qwen2.5-vl-72b-instruct:free",
+        # "🚀 Reka Flash 3": "rekaai/reka-flash-3:free"
+    }
 
 
-    ########## Choose (Text or Image) ##########
+    col1, col2 = st.columns(2)
+    with col1:
+        selected_model_name = st.selectbox("🤖 Choose AI Model", list(model_options.keys()))
+        selected_model = model_options[selected_model_name]
 
-    def display_text(option):
-        if option == 'gemini-pro':
-            return "Text (Write or Paste words)"
-        elif option == 'gemini-pro-vision':
-            return 'Image (Upload a photo with words written inside)'
-        else:
-            return option  # Handle other cases if needed
+    with col2:
+        quiz_level = st.radio("🎯 Quiz Level", ['Basic', 'Normal', 'Hard', 'Master'])
 
-    models = st.selectbox('Choose your type input', ['gemini-pro', 'gemini-pro-vision'], format_func=display_text)
-    model = genai.GenerativeModel(models)
-
-    # words_list = []
-    # random_words = random.sample(words_list, 5)
-
+    # Quiz settings
     question_type = {
         'type of questions': '',
         'Total number of questions': '',
-        'level': 'basic',
+        'level': '',
         'Answers (be end of question)': '',
-        "Answers Options" : 'In MCQ questions, The answers (choices) of the questions must be different .(for example, the answers to all questions should not be option "A" or "B" or "C" or "D")',
-        'questions orders' : 'The order of the vocabs questions should be random choose (mean The first question should not be from the first word. be random)',
+        "Answers Options": "In MCQ questions, the answer choices must vary (avoid repeating A/B/C/D).",
+        'questions orders': 'Randomize vocab question order.',
     }
 
-    ########## Question type ##########
-
-    q_type = st.multiselect(label='Questions type:', options=['MCQ', 'Fill in the Blank','True/False','Short Answer','Matching'], default='MCQ')
+    # Question Type
+    q_type = st.multiselect("❓ Question Types", 
+                            ['MCQ', 'Fill in the Blank', 'True/False', 'Short Answer', 'Matching'], 
+                            default=['MCQ'])
     question_type['type of questions'] = '+ '.join(q_type)
 
-    ########## Number of questions ##########
-    q_num = st.number_input(label='Number of questions:', min_value=1, max_value=10, value=5)
+    # Number of Questions
+    q_num = st.number_input("🔢 Number of Questions", min_value=1, max_value=10, value=5)
+    question_type['Total number of questions'] = str(q_num)
 
-    if q_num > 0:
-        question_type['Total number of questions'] = str(q_num)
+    # Level Description
+    levels = {
+        'Basic': 'Basic quiz (easy questions)',
+        'Normal': 'Normal quiz (high school level)',
+        'Hard': 'Hard quiz (college level)',
+        'Master': 'Master quiz (very difficult – for experts)'
+    }
+    question_type['level'] = levels.get(quiz_level, 'Normal')
 
-    ########## Quiz Level ##########
+    # Answer Sheet Option
+    show_answers = st.toggle("🧾 Show Answer Sheet at the End")
+    question_type['Answers (be end of page)'] = 'Yes' if show_answers else 'No'
 
-    quiz_level = st.radio(label='Quiz Level',options=['Basic','Normal','Hard','Master'])
+    # Word input
+    words = st.text_area("✍️ Enter Your Words (separated by - or ,)")
+    st.caption("Example: apple - orange - banana")
 
-    if quiz_level=='Basic':
-        question_type['level'] = 'Basic quiz (with Easy Question)'
-
-    elif quiz_level=='Normal':
-        question_type['level'] = 'Normal quiz (Not so Easy, Not so hard (HighSchool Level))'    
-
-    elif quiz_level=='Hard':
-        question_type['level'] = 'Hard quiz (with hard and challengeable questions (College Level))'
-        
-    elif quiz_level=='Master':
-        question_type['level'] = 'Master quiz (with master and so hard question - like for teachers and masters)'
-
-
-    ########## Answers Sheet ##########
-
-    answers_sheet = st.toggle("Answers Sheet")
-
-    if answers_sheet:
-        question_type['Answers (be end of page)'] = 'Yes, The answer sheet can be seen at the end of page.'
-    else:
-        question_type['Answers (be end of page)'] = 'Do not need'
-
-    ########## Response Level ##########
-
-    if models == 'gemini-pro':
-        words = st.text_area(label='Write your words')
-        notic = st.write("Note: Use '-' or ',' for seprate words")
-        if st.button('Start Quiz'):
-            # Shuffle the list of words before generating the quiz
-            vocab_list = [word.strip() for word in words.split('-')]  # Convert to list
+    if st.button("🚀 Generate Quiz"):
+        if not words.strip():
+            st.warning("Please enter some words.")
+        else:
+            vocab_list = [w.strip() for w in words.replace(',', '-').split('-') if w.strip()]
             random.shuffle(vocab_list)
-            response = model.generate_content([
-                f'take Vocabulary Quiz about these vocabs- take random of those (for learning and remembering better)\n\n{json.dumps(question_type)} (Vocabs of quiz be bold text)',
-                ' - '.join(vocab_list)  # Join the shuffled list back to string
-            ])
-            st.write('Level:', question_type['level'])
-            st.write(response.text)
 
+            prompt = f"""
+Create a vocabulary quiz using the following words. The quiz should follow this structure:
+{json.dumps(question_type, ensure_ascii=False, indent=2)}
 
-    elif models == 'gemini-pro-vision':
-        imageupload = st.file_uploader('Upload your photo', type=['jpg', 'jpeg', 'png'])
-        notic = st.write("Note: Use high-quality and legible photos. \n Try to make the words legible in the photo. \n formats support: 'jpg', 'jpeg', 'png' ")
-        if imageupload:
-            if st.button('Start Quiz'):
-                img = Image.open(imageupload)
-                response = model.generate_content([
-                    f'take Vocabulary Quiz about these vocabs- take random of those (for learning and remembering better)\n\n{json.dumps(question_type)}',
-                    img
-                ])
-                st.write(response.text)
+Use a random selection of words from the list. Bold the vocabulary word in each question.
+At the end, if answer sheet is requested, list the correct answers in order.
+Words:\n{', '.join(vocab_list)}
+"""
 
+            try:
+                completion = client.chat.completions.create(
+                    model=selected_model,
+                    messages=[{"role": "user", "content": prompt}]
+                )
+                response = completion.choices[0].message.content
+                st.markdown(f"**🧠 Quiz Level:** {question_type['level']}")
+                
+                # Separate questions and answer sheet if AI follows prompt
+                if show_answers and "**Answers:**" in response:
+                    quiz_part, answer_part = response.split("**Answers:**", 1)
+                    st.markdown(quiz_part.strip())
+                    st.markdown("---")
+                    st.markdown("### 🧾 Answer Sheet")
+                    st.markdown(answer_part.strip())
+                else:
+                    st.write(response)
 
+            except Exception as e:
+                st.error(f"Error: {e}")
 
 if __name__ == "__main__":
     run()
