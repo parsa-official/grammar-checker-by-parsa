@@ -8,33 +8,46 @@ st.set_page_config(
     page_icon="📕",
 )
 
-# Load API key from config.json
-# def load_config(file_path="config.json"):
-#     with open(file_path, "r") as f:
-#         config = json.load(f)
-#     return config
+st.title("📕 Grammar Checker by Parsa")
+st.markdown("Check grammar in English or German — with explanations in your chosen language.")
 
-# config = load_config()
-# api_key = config.get("api_key")
+# 🔐 Load API key
+def get_api_key():
+    try:
+        with open("config.json", "r") as f:
+            return json.load(f).get("api_key")
+    except:
+        return None
 
-# Initialize OpenRouter client
+stored_key = get_api_key()
+
+if not stored_key:
+    st.warning("🔐 Please enter your OpenRouter API key to use this app.")
+    user_key = st.text_input("Enter your API key (starts with `sk-`)", type="password")
+    st.markdown("➡️ [Get your free API key here](https://openrouter.ai/keys)")
+    if not user_key:
+        st.stop()
+    api_key = user_key
+else:
+    api_key = stored_key
+
+# OpenRouter client
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key="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",
+    api_key=api_key,
 )
 
-# ✅ Available Models
+# ✅ Model choices
 model_options = {
-    "⚡ Mistral 24B Instruct": "mistralai/mistral-small-3.1-24b-instruct:free",
-    "🔍 Google Gemma 3 12B": "google/gemma-3-27b-it:free",
-    "💬 OpenChat 7B": "openchat/openchat-7b:free",
     "🧠 Qwen2.5 VL 72B": "qwen/qwen2.5-vl-72b-instruct:free",
-    # "🚀 Reka Flash 3": "rekaai/reka-flash-3:free"
+    "🔍 Google Gemma 3 12B": "google/gemma-3-12b-it:free",
+    "💬 OpenChat 7B": "openchat/openchat-7b:free",
+    "🔥 OlympicCoder 32B": "open-r1/olympiccoder-32b:free",
+    "⚡ Mistral 24B Instruct": "mistralai/mistral-small-3.1-24b-instruct:free",
+    "🚀 Reka Flash 3": "rekaai/reka-flash-3:free"
 }
 
-# UI Layout
-st.markdown("Grammar check for English or German input. Response in your chosen language!")
-
+# UI - Model & Language
 col1, col2 = st.columns(2)
 
 with col1:
@@ -42,14 +55,14 @@ with col1:
     selected_model = model_options[selected_model_name]
 
 with col2:
-    chat_language = st.selectbox("🗣️ Choose Response Language", ["English","Persian", "German"])
+    chat_language = st.selectbox("🗣️ Response Language", ["Persian", "English", "German"])
 
-# Input form
-with st.form(key="grammar_form"):
+# User input
+with st.form("grammar_form"):
     txt = st.text_input("✍️ Enter a sentence (English or German):")
     submit_button = st.form_submit_button("Check Grammar")
 
-# Instruction prompt based on chat language
+# Generate the prompt based on chat language
 if chat_language == "Persian":
     instruction = """
     بررسی کن که جملهٔ زیر از نظر گرامری درست است یا نه (ممکن است جمله به انگلیسی یا آلمانی باشد).
@@ -59,7 +72,7 @@ if chat_language == "Persian":
 
 elif chat_language == "German":
     instruction = """
-    Überprüfen Sie die Grammatik des folgenden Satzes (der Satz kann auf Englisch oder Deutsch sein).
+    Überprüfen Sie die Grammatik des folgenden Satzes (auf Englisch oder Deutsch).
     Wenn er falsch ist, sagen Sie **Falsch**, geben Sie eine Korrektur an und erklären Sie den Fehler auf Deutsch.
     Wenn er korrekt ist, sagen Sie **Richtig** und geben Sie ein ähnliches Beispiel.
     Text:"""
@@ -71,19 +84,19 @@ else:  # English
     If correct, say **Correct** and provide a similar example in the same language.
     Text:"""
 
-# On form submission
+# Handle grammar check
 if submit_button and txt.strip():
-    full_prompt = f"{instruction} {txt}"
+    prompt = f"{instruction} {txt}"
 
     try:
         completion = client.chat.completions.create(
             model=selected_model,
-            messages=[{"role": "user", "content": full_prompt}]
+            messages=[{"role": "user", "content": prompt}]
         )
 
         response_text = completion.choices[0].message.content
 
-        # Highlight result
+        # Color-coded output
         if any(word in response_text.lower() for word in ["incorrect", "falsch", "نادرست"]):
             st.write(f"<p style='color: red;'>{response_text}</p>", unsafe_allow_html=True)
         elif any(word in response_text.lower() for word in ["correct", "richtig", "درست"]):
@@ -93,12 +106,3 @@ if submit_button and txt.strip():
 
     except Exception as e:
         st.error(f"❌ Error: {e}")
-
-
-# model_options = {
-#     "⚡ Mistral 24B Instruct": "mistralai/mistral-small-3.1-24b-instruct:free",
-#     "🔍 Google Gemma 3 12B": "google/gemma-3-27b-it:free",
-#     "💬 OpenChat 7B": "openchat/openchat-7b:free",
-#     "🧠 Qwen2.5 VL 72B": "qwen/qwen2.5-vl-72b-instruct:free",
-#     # "🚀 Reka Flash 3": "rekaai/reka-flash-3:free"
-# }
