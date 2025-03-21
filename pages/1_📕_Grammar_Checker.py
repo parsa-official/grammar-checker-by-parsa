@@ -20,7 +20,7 @@ st.set_page_config(
 # Initialize OpenRouter client
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key="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",
+    api_key="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",
 )
 
 # ✅ Available Models
