@@ -4,7 +4,7 @@ from openai import OpenAI
 
 # Page config
 st.set_page_config(
-    page_title="Grammar Checker by Parsa (ENG/GER)",
+    page_title="Grammar Checker by Parsa",
     page_icon="📕",
 )
 
