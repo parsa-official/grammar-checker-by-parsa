@@ -1,6 +1,9 @@
 import streamlit as st
 import json
 import openai
+from openai import OpenAI
+
+client = OpenAI(api_key=api_key)
 
 def run():
     st.set_page_config(
@@ -20,8 +23,8 @@ def run():
     api_key = config.get("api_key")
 
     # ✅ OpenRouter-compatible setup
-    openai.api_key = api_key
-    openai.base_url = "https://openrouter.ai/api/v1"
+    # TODO: The 'openai.base_url' option isn't read in the client API. You will need to pass it when you instantiate the client, e.g. 'OpenAI(base_url="https://openrouter.ai/api/v1")'
+    # openai.base_url = "https://openrouter.ai/api/v1"
 
     # AI Model Selection
     model_options = {
@@ -73,12 +76,10 @@ Text:"""
         prompt = f"{instruction} {txt}"
 
         try:
-            response = openai.ChatCompletion.create(
-                model=selected_model,
-                messages=[{"role": "user", "content": prompt}]
-            )
+            response = client.chat.completions.create(model=selected_model,
+            messages=[{"role": "user", "content": prompt}])
 
-            result = response['choices'][0]['message']['content']
+            result = response.choices[0].message.content
 
             # Display based on language markers
             if any(word in result.lower() for word in ["incorrect", "falsch", "نادرست"]):
