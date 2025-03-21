@@ -39,12 +39,11 @@ client = OpenAI(
 
 # ✅ Model choices
 model_options = {
-    "🧠 Qwen2.5 VL 72B": "qwen/qwen2.5-vl-72b-instruct:free",
-    "🔍 Google Gemma 3 12B": "google/gemma-3-12b-it:free",
-    "💬 OpenChat 7B": "openchat/openchat-7b:free",
-    "🔥 OlympicCoder 32B": "open-r1/olympiccoder-32b:free",
     "⚡ Mistral 24B Instruct": "mistralai/mistral-small-3.1-24b-instruct:free",
-    "🚀 Reka Flash 3": "rekaai/reka-flash-3:free"
+    "🔍 Google Gemma 3 12B": "google/gemma-3-27b-it:free",
+    "💬 OpenChat 7B": "openchat/openchat-7b:free",
+    "🧠 Qwen2.5 VL 72B": "qwen/qwen2.5-vl-72b-instruct:free",
+    # "🚀 Reka Flash 3": "rekaai/reka-flash-3:free"
 }
 
 # UI - Model & Language
@@ -55,7 +54,7 @@ with col1:
     selected_model = model_options[selected_model_name]
 
 with col2:
-    chat_language = st.selectbox("🗣️ Response Language", ["Persian", "English", "German"])
+    chat_language = st.selectbox("🗣️ Response Language", ["English","Persian","German"])
 
 # User input
 with st.form("grammar_form"):
