@@ -39,11 +39,11 @@ client = OpenAI(
 
 # ✅ Model choices
 model_options = {
-    "⚡ Mistral 24B Instruct": "mistralai/mistral-small-3.1-24b-instruct:free",
-    "🔍 Google Gemma 3 12B": "google/gemma-3-27b-it:free",
-    "💬 OpenChat 7B": "openchat/openchat-7b:free",
-    "🧠 Qwen2.5 VL 72B": "qwen/qwen2.5-vl-72b-instruct:free",
-    # "🚀 Reka Flash 3": "rekaai/reka-flash-3:free"
+    "🎲 Auto Free Router (recommended)": "openrouter/free",
+    "🦙 Llama 3.2 3B Instruct": "meta-llama/llama-3.2-3b-instruct:free",
+    "🔤 Qwen 2.5 7B Instruct": "qwen/qwen-2.5-7b-instruct:free",
+    "🧠 Qwen 2.5 72B Instruct": "qwen/qwen-2.5-72b-instruct:free",
+    "💎 Gemma 3 27B Instruct": "google/gemma-3-27b-it:free",
 }
 
 # UI - Model & Language
